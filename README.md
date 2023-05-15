@@ -9,4 +9,4 @@ make_user_csv.py -> att_recommend.py -> choose_attraction.py -> attraction_route
 
 when click event occur
 
-Thompson_samplings.py -> att_list_by_ts.py
+Thompson_samplings.py -> att_list_by_ts.py -> attraction_route_recommend.py
