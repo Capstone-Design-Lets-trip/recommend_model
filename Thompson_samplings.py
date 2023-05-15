@@ -10,9 +10,7 @@ Original file is located at
 # Commented out IPython magic to ensure Python compatibility.
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-
-# %matplotlib inline
+import pickle
 
 def find_clustering_index(df = '', click_item = ''):
   return df['cluster'][df[df['Name'] == click_item].index[0]]
@@ -61,9 +59,12 @@ class ThompsonSampling:
         else:
             self.beta[item] += 1
 
-def Thompson_Sampling(user_id = '', click_item = '', reco = '', total_Osakak_df = '', user_models = {}):
+def Thompson_Sampling(user_id = '', click_item = '', reco = '', total_Osakak_df = '', user_model_path = ''):
     df = pd.read_csv(total_Osakak_df)
     cluster_unique = make_cluster_unique(df)
+
+    with open(user_model_path, 'rb') as file:
+        user_models = pickle.load(file)
 
     if reco == 1:
         if user_id not in user_models:
@@ -73,6 +74,7 @@ def Thompson_Sampling(user_id = '', click_item = '', reco = '', total_Osakak_df 
         recommended_item, sampled_theta = recommender.recommend()
         ts_list = make_ts_list_in_TS(sampled_theta, cluster_unique)
         print("추천된 항목: ", recommended_item)
+
         return ts_list
 
     else:
@@ -84,6 +86,10 @@ def Thompson_Sampling(user_id = '', click_item = '', reco = '', total_Osakak_df 
         reward = int(click_item == recommended_item)
         recommender.update(recommended_item, reward)
         print("모델이 갱신되었습니다.")
+
+        with open('TS_user_models.p', 'wb') as file:
+            pickle.dump(user_models, file)
+
         return 'Nan'
 
 
