@@ -27,9 +27,12 @@ def find_time(dataframe, origins, destinations):
     return dataframe.cost[intersection[0]]
 
 
-def set_start_point(day_visit, df, lastpoint, addressList):
+def set_start_point(day_visit, df, lastpoint, addressList, city):
     if day_visit == 1:
-        search_name = '간사이 공항'
+        if city == 'Osaka':
+            search_name = '간사이 공항'
+        if city == 'Dokyo':
+            search_name = '하네다국제공항'
 
     else:
         search_name = lastpoint
@@ -385,9 +388,8 @@ class TouristAttraction:
 
 
 def attraction_route_recommend(input='', input_time='', finish_times='', Osaka_time_path='', User_df_path='',
-                               total_Osaka_path='', go_out_time='', go_in_time=''):
+                               total_Osaka_path='', go_out_time='', go_in_time='', city = ''):
     path_df = pd.read_csv(Osaka_time_path)
-    path_df.columns = ['origins', 'destinations', 'cost']
     user_df = pd.read_csv(User_df_path)
     df = pd.read_csv(total_Osaka_path)
 
@@ -403,40 +405,17 @@ def attraction_route_recommend(input='', input_time='', finish_times='', Osaka_t
     temp_box = list(input_df.cluster)
     temp_box = [int(num) for num in temp_box]
 
-    # total_boxes = []
-    # jubox = []
-    #
-    # jubox.append(input_df.Name[0])
-    # for i in range(1, len(temp_box)):
-    #     if temp_box[i - 1] != temp_box[i]:
-    #         total_boxes.append(jubox)
-    #         jubox = []
-    #         jubox.append(input_df.Name[i])
-    #     else:
-    #         jubox.append(input_df.Name[i])
-
-    tmp_total_boxes = {}
+    total_boxes = []
     jubox = []
 
     jubox.append(input_df.Name[0])
     for i in range(1, len(temp_box)):
         if temp_box[i - 1] != temp_box[i]:
-            if temp_box[i - 1] in tmp_total_boxes:
-                tmp_total_boxes[temp_box[i - 1]].extend(jubox)
-            else:
-                tmp_total_boxes[temp_box[i - 1]] = jubox
+            total_boxes.append(jubox)
             jubox = []
             jubox.append(input_df.Name[i])
         else:
             jubox.append(input_df.Name[i])
-
-        if i == len(temp_box) - 1:
-            if temp_box[i] in tmp_total_boxes:
-                tmp_total_boxes[temp_box[i]].extend(jubox)
-            else:
-                tmp_total_boxes[temp_box[i]] = jubox
-
-    total_boxes = list(tmp_total_boxes.values())
 
     addressList = list(df['Address'])
 
@@ -464,7 +443,7 @@ def attraction_route_recommend(input='', input_time='', finish_times='', Osaka_t
             if travel_time > allocationTime:
                 break
 
-        startPoint = set_start_point(first_day_visit, df, lastpoint, addressList)
+        startPoint = set_start_point(first_day_visit, df, lastpoint, addressList, city)
 
         totalList = [startPoint]
         totalList.extend(attrList)
