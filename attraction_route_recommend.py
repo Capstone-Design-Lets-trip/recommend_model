@@ -376,6 +376,16 @@ def get_suggested_count(user_df):
     else:
         return box.count(1)
 
+def is_travel_available(go_out_time, go_in_time, input_time):
+    go_out_hour = int(go_out_time[:2])
+    go_in_hour = int(go_in_time[:2])
+
+    if go_out_hour > go_in_hour or input_time.hour > go_in_hour or go_out_hour > 19 or go_in_hour < 23 or input_time.hour > 19:
+        return 'Nan'
+
+    else:
+        return 'good'
+
 
 class TouristAttraction:
     def __init__(self, name, address, stayTime):
@@ -389,6 +399,10 @@ class TouristAttraction:
 
 def attraction_route_recommend(input='', input_time='', finish_times='', Osaka_time_path='', User_df_path='',
                                total_Osaka_path='', go_out_time='', go_in_time='', city = ''):
+    check = is_travel_available(go_out_time, go_in_time, input_time)
+    if check is 'Nan':
+        return 'Nan'
+
     path_df = pd.read_csv(Osaka_time_path)
     user_df = pd.read_csv(User_df_path)
     df = pd.read_csv(total_Osaka_path)
