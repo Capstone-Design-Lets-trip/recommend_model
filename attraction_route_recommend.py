@@ -28,6 +28,7 @@ def find_time(dataframe, origins, destinations):
 
 
 def set_start_point(day_visit, df, lastpoint, addressList, city):
+
     if day_visit == 1:
         if city == 'Osaka':
             search_name = '간사이 공항'
@@ -380,7 +381,7 @@ def is_travel_available(go_out_time, go_in_time, input_time):
     go_out_hour = int(go_out_time[:2])
     go_in_hour = int(go_in_time[:2])
 
-    if go_out_hour > go_in_hour or input_time.hour > go_in_hour or go_out_hour > 19 or go_in_hour < 23 or input_time.hour > 19:
+    if go_out_hour > go_in_hour or input_time.hour > go_in_hour or go_out_hour > 19 or go_in_hour > 23 or input_time.hour > 19:
         return 'Nan'
 
     else:
