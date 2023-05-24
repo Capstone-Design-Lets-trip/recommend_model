@@ -59,9 +59,15 @@ class ThompsonSampling:
         else:
             self.beta[item] += 1
 
-def Thompson_Sampling(user_id = '', click_item = '', reco = '', total_Osakak_df = '', user_model_path = ''):
+def Thompson_Sampling(user_id = '', click_item = '', reco = '', total_Osakak_df = '', user_model_path = '', user_df_path = ''):
     df = pd.read_csv(total_Osakak_df)
     cluster_unique = make_cluster_unique(df)
+    user_df = pd.read_csv(user_df_path)
+
+    index_boxes = user_df[user_df['candidate'] == 1].index
+    candidate = []
+    for indexes in index_boxes:
+        candidate.append(df.Name[indexes])
 
     with open(user_model_path, 'rb') as file:
         user_models = pickle.load(file)
@@ -79,12 +85,22 @@ def Thompson_Sampling(user_id = '', click_item = '', reco = '', total_Osakak_df 
 
     else:
         click_item = int(find_clustering_index(df, click_item))
+
         if user_id not in user_models:
             user_models[user_id] = ThompsonSampling(len(df.cluster.unique()))
         recommender = user_models[user_id]
-        recommended_item, _ = recommender.recommend()
-        reward = int(click_item == recommended_item)
-        recommender.update(recommended_item, reward)
+        # recommended_item, _ = recommender.recommend()
+        for attraction in candidate:
+            attraction = int(find_clustering_index(df, attraction))
+            if click_item == attraction:
+                reward = 1
+                recommender.update(click_item, reward)
+            else:
+                reward = 0
+                recommender.update(attraction, reward)
+
+        # reward = int(click_item == recommended_item)
+        # recommender.update(recommended_item, reward)
         print("모델이 갱신되었습니다.")
 
         with open('TS_user_models.p', 'wb') as file:
